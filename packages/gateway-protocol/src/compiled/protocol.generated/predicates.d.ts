@@ -1958,6 +1958,11 @@ export function isSessionMemberAddParams(
 ): value is import("typebox").Static<
   typeof import("../../schema-modules.js").SessionMemberAddParamsSchema
 >;
+export function isSessionMemberSetAccessParams(
+  value: unknown,
+): value is import("typebox").Static<
+  typeof import("../../schema-modules.js").SessionMemberSetAccessParamsSchema
+>;
 export function isSessionMemberRemoveParams(
   value: unknown,
 ): value is import("typebox").Static<
