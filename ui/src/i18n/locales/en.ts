@@ -220,6 +220,7 @@ type EnglishCatalog = TranslationMap & {
   desktop: TranslationMap &
     Record<"title" | "openWindow" | "unavailable" | "toggle" | "reconnect" | "connecting", string>;
   worktrees: TranslationMap;
+  projectsPage: TranslationMap;
   sessionHovercard: TranslationMap & { states: TranslationMap; checks: TranslationMap } & Record<
       | "ariaLabel"
       | "linkedChannel"
@@ -684,6 +685,7 @@ const startupEnglish = {
     execApprovals: {},
   },
   worktrees: {},
+  projectsPage: {},
   agentChip: agentEn.agentChip,
   agentScope: agentEn.agentScope,
   newSession: {
@@ -1025,6 +1027,7 @@ const startupEnglish = {
     approvals: "Approvals",
     workboard: "Workboard",
     worktrees: "Worktrees",
+    projects: "Projects",
     channels: "Channels",
     connection: "Gateway",
     sessions: "Sessions",
