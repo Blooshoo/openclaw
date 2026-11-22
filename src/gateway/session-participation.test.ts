@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { PARTICIPATION_TOOL_ALLOWLIST } from "../agents/participation-ceiling.js";
 import { setRuntimeConfigSnapshot } from "../config/runtime-snapshot.js";
 import { upsertSessionEntryCore } from "../config/sessions/session-accessor.js";
 import {
@@ -8,6 +7,7 @@ import {
   setSessionMemberAccess,
 } from "../config/sessions/session-sharing-store.native.js";
 import { prepareSessionSourceAuthority } from "../config/sessions/session-source-authority.js";
+import { PARTICIPATION_TOOL_ALLOWLIST } from "../shared/participation-tools.js";
 import { withOpenClawTestState } from "../test-utils/openclaw-test-state.js";
 import { createGatewayMethodRegistry } from "./methods/registry.js";
 import { resolveSandboxedSessionCreation } from "./operator-session-run.js";

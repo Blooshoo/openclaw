@@ -1,0 +1,20 @@
+/** Core tools an invited participant's turn may use; roles can only narrow this list. */
+export const PARTICIPATION_TOOL_ALLOWLIST = Object.freeze([
+  "read",
+  "write",
+  "edit",
+  "apply_patch",
+  "ls",
+  "exec",
+  "process",
+  "sessions_spawn",
+  "sessions_yield",
+  "github_publish",
+  "skills_search",
+  "skills_read",
+  "web_search",
+  "web_fetch",
+  "tool_search",
+  "tool_describe",
+  "dispatch_action",
+]);

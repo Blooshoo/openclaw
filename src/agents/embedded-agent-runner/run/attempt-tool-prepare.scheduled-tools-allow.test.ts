@@ -6,6 +6,7 @@ import { clearRuntimeConfigSnapshot, setRuntimeConfigSnapshot } from "../../../c
 import type { OpenClawConfig } from "../../../config/types.openclaw.js";
 import { setActivePluginRegistry } from "../../../plugins/runtime.js";
 import { getPluginToolMeta, setPluginToolMeta } from "../../../plugins/tool-metadata.js";
+import { PARTICIPATION_TOOL_ALLOWLIST } from "../../../shared/participation-tools.js";
 import {
   createChannelTestPluginBase,
   createTestRegistry,
@@ -13,7 +14,6 @@ import {
 import { prepareSystemAgentRunAdmission } from "../../admitted-run-context.js";
 import { rewrapToolWithBeforeToolCallHook } from "../../agent-tools.before-tool-call.wrapper.js";
 import { runWithAgentRingZeroTools } from "../../agent-tools.ring-zero-context.js";
-import { PARTICIPATION_TOOL_ALLOWLIST } from "../../participation-ceiling.js";
 import { createStubTool } from "../../test-helpers/agent-tool-stubs.js";
 import { makeProviderModelFixture } from "../../test-helpers/provider-model-fixture.js";
 import type { AnyAgentTool } from "../../tools/common.js";

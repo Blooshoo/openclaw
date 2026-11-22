@@ -1,6 +1,7 @@
 import type { SessionPermissionMode } from "../../packages/gateway-protocol/src/schema/sessions-row.js";
 import type { SessionEntry } from "../config/sessions/types.js";
 import { intersectExecPolicyCeilings, type ExecPolicyCeiling } from "../infra/exec-policy.js";
+import { PARTICIPATION_TOOL_ALLOWLIST } from "../shared/participation-tools.js";
 import { AgentHarnessPreflightError } from "./harness/errors.js";
 import { intersectSessionPermissionModes } from "./session-permission-mode.js";
 
@@ -29,25 +30,6 @@ export type ParticipationCeiling = {
 export function participationPermission(ceiling: ParticipationCeiling): SessionPermissionMode {
   return ceiling.permission ?? "guarded";
 }
-export const PARTICIPATION_TOOL_ALLOWLIST = Object.freeze([
-  "read",
-  "write",
-  "edit",
-  "apply_patch",
-  "ls",
-  "exec",
-  "process",
-  "sessions_spawn",
-  "sessions_yield",
-  "github_publish",
-  "skills_search",
-  "skills_read",
-  "web_search",
-  "web_fetch",
-  "tool_search",
-  "tool_describe",
-  "dispatch_action",
-]);
 
 /** Only tools with an enforced per-session boundary can enter a participation ceiling. */
 export function isParticipationToolAllowed(name: string): boolean {

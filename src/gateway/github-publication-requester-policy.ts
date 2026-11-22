@@ -1,12 +1,10 @@
 import { resolveAgentWorkspaceDir } from "../agents/agent-scope.js";
-import {
-  PARTICIPATION_TOOL_ALLOWLIST,
-  type ParticipationCeiling,
-} from "../agents/participation-ceiling.js";
+import type { ParticipationCeiling } from "../agents/participation-ceiling.js";
 import { sessionCreatorProfileId } from "../config/sessions/session-entry-provenance.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import type { PluginGatewayAccessAuthority } from "../plugins/gateway-access-policy.types.js";
 import { roleScopesAllow } from "../shared/operator-scope-compat.js";
+import { PARTICIPATION_TOOL_ALLOWLIST } from "../shared/participation-tools.js";
 import {
   immutableGitHubPublicationParticipation,
   type GitHubPublicationParticipation,

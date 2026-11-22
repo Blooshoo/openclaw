@@ -3,11 +3,9 @@ import {
   errorShape,
   type ErrorShape,
 } from "../../packages/gateway-protocol/src/index.js";
-import {
-  PARTICIPATION_TOOL_ALLOWLIST,
-  type ParticipationCeiling,
-} from "../agents/participation-ceiling.js";
+import type { ParticipationCeiling } from "../agents/participation-ceiling.js";
 import { intersectSessionPermissionModes } from "../agents/session-permission-mode.js";
+import { PARTICIPATION_TOOL_ALLOWLIST } from "../shared/participation-tools.js";
 import { readParticipantPublicationAuthority } from "./github-publication-participation.js";
 import { requiresSessionParticipation } from "./method-scopes.js";
 import { readQueuedParticipationProfile } from "./queued-chat-input-admission.js";
