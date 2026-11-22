@@ -379,7 +379,7 @@ test("update.run persists the accepted handoff before parking and restarting its
         .spyOn(installStatus, "resolveStartupInstallStatus")
         .mockResolvedValue({
           root,
-          status: { root, installKind: "git", packageManager: "pnpm" },
+          status: { root, installKind: "package", packageManager: "npm" },
           installReceipt: null,
         });
       // The shared server starts below the CLI run loop that publishes its owner.
@@ -418,7 +418,7 @@ test("update.run persists the accepted handoff before parking and restarting its
             kind: "update",
             status: "skipped",
             stats: {
-              mode: "git",
+              mode: "npm",
               root,
               runId: accepted?.runId,
               handoffId: identity.handoffId,
