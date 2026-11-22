@@ -14,10 +14,8 @@ import { runDoctorSessionSqlite } from "../commands/doctor-session-sqlite.js";
 import { loadExactSessionEntry } from "../config/sessions/session-accessor.js";
 import type { OpenClawConfig } from "../config/types.openclaw.js";
 import { cronRunLogEntryToDetail } from "../cron/run-history-detail.js";
-import { CronService } from "../cron/service.js";
 import { resolveCronJobsStorePathFromConfig } from "../cron/store.js";
 import { resolveCronStoreKeyInDatabase } from "../cron/store/paths.js";
-import { readCronQuarantinedJobsInDatabase } from "../cron/store/quarantine.kernel.js";
 import {
   loadedCronStoreFromRows,
   loadCronRows,
@@ -41,7 +39,6 @@ import { getFileLockProcessStartTime } from "../shared/pid-alive.js";
 import { withExistingOpenClawStateDatabaseReadOnly } from "../state/openclaw-state-db-readonly.js";
 import { runOpenClawStateWriteTransaction } from "../state/openclaw-state-db.js";
 import { resolveOpenClawStateSqlitePath } from "../state/openclaw-state-db.paths.js";
-import { createTestGatewayScheduler } from "../test-utils/gateway-scheduler-clock.js";
 import type { OpenClawTestState } from "../test-utils/openclaw-test-state.js";
 import { runDoctorHealthFlow } from "./doctor-health.js";
 const { mocks, createDoctorRuntime, createDoctorConfig, stubDoctorEnv, withDoctorState } =
@@ -332,77 +329,23 @@ it.each([
         expect(runtime.exit).not.toHaveBeenCalledWith(1);
         const after = read();
         if (startupNotification) {
+          // Doctor settles the interrupted run from its recorded failure. Since #203106 a
+          // failing recurring job keeps its schedule: no auto-disable and no safety notice.
           expectResult(resultPath, { status: "ok" });
-          expect(loadedCronStoreFromRows(after.rows).store.jobs[0]).toMatchObject({
+          const settled = loadedCronStoreFromRows(after.rows).store.jobs[0]!;
+          expect(settled).toMatchObject({
             payload: { kind: "agentTurn" },
             enabled: !disabledDuringConversion,
-            state: { runningAtMs, consecutiveErrors: 9 },
+            state: {
+              consecutiveErrors: 10,
+              lastRunAtMs: runningAtMs,
+              lastRunStatus: "error",
+              lastError: "synthetic provider failure",
+            },
           });
+          expect(settled.state.runningAtMs).toBeUndefined();
+          expect(settled.state.autoDisabled).toBeUndefined();
           expect(after.history).toEqual(before.history);
-          const notified = Promise.withResolvers<void>();
-          const enqueueSessionEvent = vi.fn(async () => {
-            notified.resolve();
-            return { ok: true as const };
-          });
-          const cron = new CronService({
-            scheduler: createTestGatewayScheduler(),
-            storePath,
-            cronEnabled: true,
-            defaultAgentId: "main",
-            nowMs: () => runningAtMs + 1_000,
-            log: { debug() {}, info() {}, warn() {}, error() {} },
-            enqueueSystemEvent: vi.fn(),
-            enqueueSessionEvent,
-            runIsolatedAgentJob: vi.fn(async () => ({ status: "ok" as const })),
-          });
-          const gateway = await acquireGatewayLock({
-            env: state.env,
-            role: "gateway",
-            allowInTests: true,
-          });
-          try {
-            await gateway!.run(() => cron.start());
-            if (!disabledDuringConversion) {
-              await notified.promise;
-              expect(enqueueSessionEvent).toHaveBeenCalledExactlyOnceWith(
-                expect.stringContaining("10 consecutive run failures"),
-                expect.objectContaining({ agentId: "main", jobId: "interrupted-monitor" }),
-              );
-            } else {
-              // An operator-disabled job needs result settlement, not a new
-              // auto-disable transition or its notification.
-              expect(enqueueSessionEvent).not.toHaveBeenCalled();
-            }
-            const settled = read();
-            const recovered = loadedCronStoreFromRows(settled.rows).store.jobs[0]!;
-            expect(recovered).toMatchObject({
-              payload: { kind: "agentTurn" },
-              enabled: false,
-              state: {
-                consecutiveErrors: 10,
-                lastRunAtMs: runningAtMs,
-                lastRunStatus: "error",
-                lastError: "synthetic provider failure",
-                lastDurationMs: 500,
-              },
-            });
-            if (!disabledDuringConversion) {
-              expect(recovered.state.autoDisabled?.reason).toBe("consecutive-failures");
-            }
-            expect(recovered.state.runningAtMs).toBeUndefined();
-            expect(settled.history).toEqual(after.history);
-            expect(settled.history).toHaveLength(1);
-            expect(
-              withExistingOpenClawStateDatabaseReadOnly(
-                ({ db }) => readCronQuarantinedJobsInDatabase(db, storeKey),
-                { env: state.env },
-              ),
-            ).toEqual([]);
-          } finally {
-            cron.stop();
-            await cron.waitForIdle();
-            await gateway?.release();
-          }
         } else if (ownership === "stopped") {
           expectResult(resultPath, { status: "ok" });
           expect(after.rows[0]?.payload_kind).toBe("agentTurn");
