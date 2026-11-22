@@ -1,4 +1,4 @@
-import { operatorReadShareKey } from "./read-share-keys.js";
+import { modelsListShareKey, operatorReadShareKey } from "./read-share-keys.js";
 
 export const CONTROL_PLANE_WRITE = { controlPlaneWrite: true } as const;
 export const SIDECAR_CONTROL_PLANE_WRITE = { startup: true, controlPlaneWrite: true } as const;
@@ -9,6 +9,12 @@ export const SESSION_METADATA_READ = {
   shareKey: operatorReadShareKey,
   shareMaxAgeMs: 1_000,
   shareInvalidationEvents: ["sessions.changed", "chat.metadata.changed"],
+} as const;
+export const MODELS_LIST_READ = {
+  ...PROFILE_DEPENDENT,
+  shareKey: modelsListShareKey,
+  shareMaxAgeMs: 1_000,
+  shareInvalidationEvents: ["chat.metadata.changed", "sessions.changed"],
 } as const;
 export const OBSERVATION = { lifetime: "observation" } as const;
 export const UNADVERTISED_OBSERVATION = { ...UNADVERTISED, ...OBSERVATION } as const;

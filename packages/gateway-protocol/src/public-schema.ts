@@ -516,6 +516,8 @@ export {
   ProjectsSearchRemoteResultSchema,
   ProjectsRemoveParamsSchema,
   ProjectsRemoveResultSchema,
+  ProjectsRenameParamsSchema,
+  ProjectsRenameResultSchema,
   WorktreeRecordSchema,
   WorktreesListParamsSchema,
   WorktreesListResultSchema,

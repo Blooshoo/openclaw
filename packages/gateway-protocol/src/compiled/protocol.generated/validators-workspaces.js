@@ -29,6 +29,7 @@ export {
   isProjectsAddParams,
   isProjectsSearchRemoteParams,
   isProjectsRemoveParams,
+  isProjectsRenameParams,
   isWorktreesListParams,
   isBoardGetParams,
   isBoardUpdateParams,

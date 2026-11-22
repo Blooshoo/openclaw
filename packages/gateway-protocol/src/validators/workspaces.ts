@@ -118,6 +118,10 @@ export const validateProjectsRemoveParams = createProtocolValidator(
   S.ProjectsRemoveParamsSchema,
   Checks.isProjectsRemoveParams,
 );
+export const validateProjectsRenameParams = createProtocolValidator(
+  S.ProjectsRenameParamsSchema,
+  Checks.isProjectsRenameParams,
+);
 export const validateWorktreesListParams = createProtocolValidator(
   S.WorktreesListParamsSchema,
   Checks.isWorktreesListParams,
