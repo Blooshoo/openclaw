@@ -33,7 +33,7 @@ import {
 } from "../../local-model-lean.js";
 import { supportsModelTools } from "../../model-tool-support.js";
 import { resolveNativeWebSearchRoute } from "../../native-web-search.js";
-import { participationToolAllowlist } from "../../participation-ceiling.js";
+import { participationAllowsTool } from "../../participation-ceiling.js";
 import { recordAgentCleanupFailure, runOwnedAgentCleanup } from "../../run-cleanup-timeout.js";
 import { prepareRunSessionPermissionPolicy } from "../../session-permission-policy.js";
 import { resolveSessionPlacementComputer } from "../../session-placement-computer.js";
@@ -125,9 +125,6 @@ export async function prepareEmbeddedAttemptToolBase(params: {
   const toolsAllowWithForcedRuntimeTools = toolRunContext.runtimeToolAllowlist;
   const toolsEnabled = supportsModelTools(attempt.model);
   const isRawModelRun = attempt.modelRun === true || attempt.promptMode === "none";
-  const participationTools = attempt.participationCeiling
-    ? participationToolAllowlist(attempt.participationCeiling)
-    : undefined;
   const toolSurfaceRuntime = createAgentHarnessToolSurfaceRuntimeCore({
     config: attempt.config,
     trigger: attempt.trigger,
@@ -143,8 +140,10 @@ export async function prepareEmbeddedAttemptToolBase(params: {
     disableToolSearch:
       attempt.disableToolSearch ||
       (attempt.participationCeiling && attempt.swarmCollector) ||
-      (participationTools &&
-        [...TOOL_SEARCH_CONTROL_TOOL_NAMES].some((name) => !participationTools.includes(name)))
+      (attempt.participationCeiling &&
+        [...TOOL_SEARCH_CONTROL_TOOL_NAMES].some(
+          (name) => !participationAllowsTool(attempt.participationCeiling!, name),
+        ))
         ? true
         : undefined,
     modelToolsEnabled: toolsEnabled,
